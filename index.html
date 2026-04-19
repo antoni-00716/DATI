@@ -1,0 +1,2689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DATI数智人格测试</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'Noto Sans SC', sans-serif; background: #0A0E27; color: #fff; }
+    .container { max-width: 480px; margin: 0 auto; padding: 20px; height: 100%; }
+    .page { display: none; height: 100%; overflow-y: auto; }
+    .page.active { display: block; height: 100%; }
+    
+    /* ========== 首页 ========== */
+    #home { 
+      padding: 10px 0 0 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .home-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 0 16px;
+    }
+    .hero { text-align: center; padding: 8px 0 4px; flex-shrink: 0; }
+    .hero h1 { font-family: 'Orbitron', sans-serif; font-size: 36px; color: #00FFFF; text-shadow: 0 0 30px rgba(0,255,255,0.6); letter-spacing: 6px; animation: glow 2s ease-in-out infinite alternate; }
+    @keyframes glow { from { text-shadow: 0 0 20px rgba(0,255,255,0.4); } to { text-shadow: 0 0 40px rgba(0,255,255,0.8), 0 0 60px rgba(0,255,255,0.4); } }
+    .hero p { color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 4px; letter-spacing: 3px; }
+    
+    /* 核心钩子 */
+    .hook-section { text-align: center; padding: 8px 0 12px; flex-shrink: 0; }
+    .hook-icon { font-size: 20px; margin-bottom: 4px; }
+    .hook-text { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+    .hook-highlight { font-size: 16px; font-weight: 600; color: #fff; }
+    
+    /* 维度说明卡片 */
+    .dim-cards { display: flex; gap: 8px; margin-bottom: 10px; flex-shrink: 0; }
+    .dim-card { flex: 1; display: flex; align-items: center; gap: 8px; padding: 10px 8px; background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); }
+    .dim-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .dim-icon-red { background: rgba(255,71,87,0.15); }
+    .dim-icon-yellow { background: rgba(255,195,18,0.15); }
+    .dim-icon-green { background: rgba(46,213,115,0.15); }
+    .dim-info { flex: 1; min-width: 0; }
+    .dim-name { font-size: 10px; font-weight: 600; color: #fff; line-height: 1.3; }
+    .dim-desc { font-size: 9px; color: rgba(255,255,255,0.5); line-height: 1.2; display: none; }
+    
+    /* 人格预览 */
+    .personality-preview { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.08); }
+    .preview-title { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-align: center; letter-spacing: 1px; }
+    .preview-cards { display: flex; justify-content: center; gap: 6px; margin-bottom: 6px; }
+    .preview-card { flex: 1; max-width: 90px; padding: 8px 4px; border-radius: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .preview-card:hover { transform: translateY(-2px); }
+    .card-capitalist { background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(41,128,185,0.2)); border: 1px solid rgba(52,152,219,0.3); }
+    .card-naked { background: linear-gradient(135deg, rgba(255,71,87,0.2), rgba(255,71,87,0.15)); border: 1px solid rgba(255,71,87,0.3); }
+    .card-ultimate { background: linear-gradient(135deg, rgba(46,213,115,0.2), rgba(46,213,115,0.15)); border: 1px solid rgba(46,213,115,0.3); }
+    .card-icon { font-size: 18px; }
+    .card-name { font-size: 11px; font-weight: 600; color: #fff; }
+    .card-desc { font-size: 8px; color: rgba(255,255,255,0.6); }
+    .preview-more { text-align: center; font-size: 10px; color: rgba(255,255,255,0.4); }
+    
+    /* 主CTA按钮 */
+    .btn-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 20px 24px;
+      background: linear-gradient(135deg, #00FFFF, #FF00FF);
+      color: #000;
+      border: none;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,255,255,0.3);
+      animation: ctaPulse 2s ease-in-out infinite;
+    }
+    @keyframes ctaPulse { 0%,100% { box-shadow: 0 4px 20px rgba(0,255,255,0.3), 0 0 0 0 rgba(0,255,255,0.4); } 50% { box-shadow: 0 8px 30px rgba(0,255,255,0.5), 0 0 0 10px rgba(0,255,255,0); } }
+    .btn-main:hover { animation: none; box-shadow: 0 8px 30px rgba(0,255,255,0.5); transform: scale(1.02); }
+    .btn-main:active { transform: scale(0.98); }
+    .btn-arrow { transition: transform 0.2s; }
+    .btn-main:hover .btn-arrow { transform: translateX(4px); }
+    
+    /* 社会证明 */
+    .proof-section { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+    .proof-item { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 11px; color: rgba(255,255,255,0.6); }
+    .proof-icon { font-size: 12px; }
+    .proof-highlight { background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); color: #FFD700; }
+    .proof-highlight strong { color: #FFD700; }
+    
+    .footer { text-align: center; padding: 20px 0 8px; font-size: 11px; color: rgba(255,255,255,0.25); }
+    
+    /* ========== 答题页 ========== */
+    .quiz-top { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+    .quiz-top-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.05); border: none; color: rgba(255,255,255,0.5); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .quiz-num { font-size: 13px; color: rgba(255,255,255,0.5); font-family: 'Orbitron', sans-serif; }
+    .quiz-dim { font-size: 12px; padding: 6px 14px; border-radius: 20px; }
+    .progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, #00FFFF, #FF00FF); transition: width 0.3s; border-radius: 2px; }
+    
+    .question { font-size: 18px; line-height: 1.6; margin-bottom: 24px; font-weight: 500; animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .option { width: 100%; padding: 16px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; text-align: left; cursor: pointer; margin-bottom: 10px; font-size: 14px; line-height: 1.5; transition: all 0.2s; animation: slideIn 0.3s ease-out backwards; }
+    .option:nth-child(1) { animation-delay: 0.05s; }
+    .option:nth-child(2) { animation-delay: 0.1s; }
+    .option:nth-child(3) { animation-delay: 0.15s; }
+    .option:nth-child(4) { animation-delay: 0.2s; }
+    .option:nth-child(5) { animation-delay: 0.25s; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    .option:hover { background: rgba(0,255,255,0.1); border-color: rgba(0,255,255,0.3); transform: translateX(4px); }
+    .option.selected { 
+      background: rgba(0,255,255,0.25) !important; 
+      border: 2px solid #00FFFF !important; 
+      transform: scale(1.03) !important; 
+      box-shadow: 0 0 25px rgba(0,255,255,0.4), 0 0 50px rgba(0,255,255,0.2) !important;
+      animation: none !important;
+      transition: all 0.2s ease;
+    }
+    .option.selected::before { content: '✓ '; color: #00FFFF; font-weight: bold; font-size: 16px; }
+    
+    /* ========== 结果页 - 优化版 V3 ========== */
+    #result {
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    .result-main {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 24px;
+      gap: 14px;
+      overflow-y: auto;
+    }
+    
+    /* 顶部揭晓区 */
+    .result-hero {
+      text-align: center;
+    }
+    
+    .result-name-wrapper {
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    .result-name-wrapper.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .result-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      margin: 0;
+      text-shadow: 0 0 30px currentColor;
+      letter-spacing: 2px;
+    }
+    
+    .result-rarity {
+      font-size: 11px;
+      color: #FFD700;
+      margin: 8px 0 0;
+      padding: 5px 14px;
+      background: rgba(255, 215, 0, 0.12);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 20px;
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease 0.15s;
+    }
+    
+    .result-rarity.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .result-summary {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.5;
+      max-width: 300px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease 0.25s;
+    }
+    
+    .result-summary.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .slogan-box {
+      text-align: center;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, rgba(255, 224, 102, 0.1), rgba(255, 107, 122, 0.05));
+      border: 1px solid rgba(255, 224, 102, 0.2);
+      border-radius: 10px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease 0.35s;
+    }
+    
+    .slogan-box.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .slogan-box .slogan-text {
+      font-size: 14px;
+      color: #FFE066;
+      font-weight: 500;
+    }
+    
+    .traits-section {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease 0.45s;
+    }
+    
+    .traits-section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .traits-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    
+    .trait-tag {
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    
+    .action-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 280px;
+      margin-top: 4px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease 0.55s;
+    }
+    
+    .action-section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .share-btn {
+      background: linear-gradient(135deg, #FFE066, #FF6B7A);
+      border: none;
+      color: #1a1a2e;
+      padding: 14px 24px;
+      border-radius: 28px;
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(255, 224, 102, 0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .share-btn:active {
+      transform: scale(0.97);
+    }
+    
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 12px 24px;
+      border-radius: 28px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-ghost:active {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* ========== AI工具推荐 ========== */
+    .ai-tools-section {
+      width: 100%;
+      max-width: 300px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease 0.55s;
+    }
+    
+    .ai-tools-section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .ai-tools-title {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    
+    .ai-tools-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+    
+    .ai-tool-tag {
+      padding: 6px 12px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      border-radius: 16px;
+      font-size: 12px;
+      color: #00FFFF;
+    }
+    
+    /* ========== 人格配对 ========== */
+    .match-section {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.4s ease 0.65s;
+    }
+    
+    .match-section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .match-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      min-width: 90px;
+    }
+    
+    .match-best {
+      background: rgba(46, 213, 115, 0.12);
+      border: 1px solid rgba(46, 213, 115, 0.25);
+    }
+    
+    .match-worst {
+      background: rgba(255, 71, 87, 0.12);
+      border: 1px solid rgba(255, 71, 87, 0.25);
+    }
+    
+    .match-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .match-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .match-best .match-name {
+      color: #2ED573;
+    }
+    
+    .match-worst .match-name {
+      color: #FF6B7A;
+    }
+    
+    /* ========== 海报预览浮层 ========== */
+    .poster-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(10px);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 1000;
+      padding: 0;
+    }
+    
+    .poster-overlay.active {
+      display: flex;
+      animation: fadeIn 0.25s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    
+    .poster-modal {
+      width: 100%;
+      max-width: 480px;
+      max-height: 92vh;
+      background: linear-gradient(180deg, #1a1f3a 0%, #0f1225 100%);
+      border-radius: 24px 24px 0 0;
+      padding: 20px 24px 32px;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .poster-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .poster-modal-header {
+      text-align: center;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    
+    .poster-modal-title {
+      font-size: 18px;
+      color: #FFE066;
+      margin: 0 0 4px;
+    }
+    
+    .poster-modal-hint {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 0;
+    }
+    
+    .poster-preview-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    .poster-preview {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    
+    .poster-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .poster-save-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #4ECDC4, #44A08D);
+      border: none;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(78, 205, 196, 0.3);
+      transition: all 0.3s;
+    }
+    
+    .poster-share-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #FFE066, #FF6B7A);
+      border: none;
+      color: #1a1a2e;
+      padding: 12px 16px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(255, 224, 102, 0.3);
+      transition: all 0.3s;
+    }
+    
+    .poster-copy-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .poster-save-tip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(255, 224, 102, 0.08);
+      border: 1px solid rgba(255, 224, 102, 0.15);
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    
+    .save-tip-icon {
+      font-size: 14px;
+    }
+    
+    .save-tip-text {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .poster-copy-title {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin: 0 0 10px;
+    }
+    
+    .poster-copy-btn.copied {
+      background: rgba(46, 213, 115, 0.2);
+      border-color: rgba(46, 213, 115, 0.4);
+      color: #2ED573;
+    }
+    
+    .poster-copy-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    
+    .poster-copy-text {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+      margin: 0;
+      white-space: pre-line;
+    }
+    
+    .poster-copy-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.9);
+      padding: 12px 16px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .poster-copy-btn:active {
+      background: rgba(0, 255, 255, 0.2);
+      border-color: rgba(0, 255, 255, 0.4);
+    }
+    
+    /* ========== Loading页 ========== */
+    .loading-section {
+      text-align: center;
+      padding-top: 80px;
+      max-width: 400px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 旧样式隐藏 */
+    .reveal-badge, .radar-box, .core-description, .traits-grid, .slogan-card, 
+    .match-cards, .result-header, .rarity-rank, .match-section .match-title,
+    .match-tags, .match-tag, .ai-tools-title, .result-actions, .description { display: none; }
+    
+    /* ========== 游戏化加载页 - 百分比进度版 ========== */
+    .loading-container {
+      text-align: center;
+      padding-top: 80px;
+      max-width: 400px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* 标题 */
+    .loading-title {
+      margin-bottom: 50px;
+    }
+    
+    /* 进度条容器 */
+    .progress-container {
+      width: 100%;
+      margin-bottom: 50px;
+    }
+    
+    .progress-track {
+      width: 100%;
+      height: 14px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 7px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      background-size: 200% 100%;
+      border-radius: 7px;
+      transition: width 0.4s ease;
+      animation: progressGradient 2s linear infinite;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
+    
+    @keyframes progressGradient {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    
+    .progress-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 36px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    /* 状态提示 */
+    .status-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: auto;
+      padding: 20px 0;
+    }
+    
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 16px 24px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      opacity: 0.4;
+      transform: translateX(-10px);
+      transition: all 0.4s ease;
+    }
+    
+    .status-item.active {
+      opacity: 1;
+      transform: translateX(0);
+      background: rgba(102, 126, 234, 0.2);
+      border-color: rgba(102, 126, 234, 0.5);
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    }
+    
+    .status-item.done {
+      opacity: 0.6;
+      background: rgba(46, 213, 115, 0.1);
+      border-color: rgba(46, 213, 115, 0.3);
+    }
+    
+    .status-item.done .status-icon {
+      animation: none;
+    }
+    
+    .status-icon {
+      font-size: 18px;
+      animation: iconPulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    
+    .status-text {
+      font-size: 14px;
+      color: rgba(255,255,255,0.8);
+    }
+    
+    /* 底部提示 */
+    .loading-footer {
+      margin-top: auto;
+      padding-top: 20px;
+    }
+    
+    .loading-tip {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+    }
+    
+    .back-edit-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.6);
+      padding: 12px 28px;
+      border-radius: 25px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 30px;
+    }
+    
+    .back-edit-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.9);
+      transform: translateY(-2px);
+    }
+    
+    /* ========== 新首页样式 ========== */
+    .hook-section {
+      text-align: center;
+      padding: 16px 0 20px;
+    }
+    .hook-text {
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+    }
+    .hook-highlight {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 8px;
+    }
+    
+    .personality-preview {
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .preview-title {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .preview-cards {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .preview-card {
+      flex: 1;
+      max-width: 105px;
+      padding: 12px 8px;
+      border-radius: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .preview-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .card-capitalist {
+      background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(41,128,185,0.2));
+      border: 1px solid rgba(52,152,219,0.3);
+    }
+    .card-naked {
+      background: linear-gradient(135deg, rgba(255,71,87,0.2), rgba(255,71,87,0.15));
+      border: 1px solid rgba(255,71,87,0.3);
+    }
+    .card-ultimate {
+      background: linear-gradient(135deg, rgba(46,213,115,0.2), rgba(46,213,115,0.15));
+      border: 1px solid rgba(46,213,115,0.3);
+    }
+    .card-icon {
+      font-size: 24px;
+    }
+    .card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .card-desc {
+      font-size: 10px;
+      color: rgba(255,255,255,0.6);
+    }
+    .preview-more {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+    }
+    
+    .btn-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px 24px;
+      background: linear-gradient(135deg, #00FFFF, #00CCFF);
+      color: #000;
+      border: none;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 4px 20px rgba(0,255,255,0.3);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    .btn-main:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 30px rgba(0,255,255,0.5);
+      animation: none;
+    }
+    .btn-main:active {
+      transform: scale(0.98);
+    }
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 4px 20px rgba(0,255,255,0.3), 0 0 0 0 rgba(0,255,255,0.4);
+      }
+      50% {
+        box-shadow: 0 4px 30px rgba(0,255,255,0.5), 0 0 0 8px rgba(0,255,255,0);
+      }
+    }
+    .btn-arrow {
+      font-size: 20px;
+    }
+    
+    .proof-section {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .proof-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+    }
+    .proof-item strong {
+      color: rgba(255,255,255,0.8);
+    }
+    .proof-highlight {
+      color: #FFD700;
+      font-weight: 500;
+    }
+    .proof-highlight strong {
+      color: #FFD700;
+    }
+    .proof-icon {
+      font-size: 16px;
+    }
+    
+    /* ========== 答题页游戏化样式 ========== */
+    #quiz {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    /* 顶部Header - 极简版 */
+    .quiz-header {
+      padding: 8px 0;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .quiz-top-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .back-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      border: none;
+      color: rgba(255,255,255,0.5);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 题号 + 进度条 */
+    .quiz-num {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+    }
+    .progress-inline {
+      width: 120px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar-inline {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00FFFF, #FF00FF);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    
+    /* 维度标签 - 只在切换维度时显示 */
+    .quiz-dim {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .quiz-dim.show {
+      opacity: 1;
+    }
+    
+    .quiz-content {
+      flex: 1;
+    }
+    
+    /* 题目 */
+    .question {
+      font-size: 17px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-weight: 500;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* 选项 - 加大间距 */
+    .option {
+      width: 100%;
+      padding: 16px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      margin-bottom: 12px;
+      font-size: 15px;
+      line-height: 1.5;
+      transition: all 0.2s;
+      animation: slideIn 0.3s ease-out backwards;
+    }
+    .option:nth-child(1) { animation-delay: 0.05s; }
+    .option:nth-child(2) { animation-delay: 0.1s; }
+    .option:nth-child(3) { animation-delay: 0.15s; }
+    .option:nth-child(4) { animation-delay: 0.2s; }
+    .option:nth-child(5) { animation-delay: 0.25s; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    .option:hover {
+      background: rgba(0,255,255,0.1);
+      border-color: rgba(0,255,255,0.3);
+      transform: translateX(4px);
+    }
+    .option.selected {
+      background: rgba(0,255,255,0.2);
+      border-color: #00FFFF;
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(0,255,255,0.2);
+    }
+    .option.selected::before { content: '✓ '; color: #00FFFF; font-weight: bold; }
+    
+    /* 底部进度 - 改成简洁进度条 */
+    .quiz-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      padding-top: 16px;
+    }
+    .progress-bar-simple {
+      display: flex;
+      gap: 4px;
+    }
+    .progress-segment {
+      width: 50px;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.1);
+      transition: all 0.3s;
+    }
+    .progress-segment.completed {
+      background: linear-gradient(90deg, #00FFFF, #FF00FF);
+    }
+    .progress-segment.current {
+      background: #FF00FF;
+      animation: segmentPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes segmentPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    
+    /* 生成结果按钮 */
+    .generate-btn {
+      width: 100%;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #FF00FF, #00FFFF);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255,0,255,0.4);
+      transition: all 0.3s;
+    }
+    .generate-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 30px rgba(255,0,255,0.5);
+    }
+    .generate-btn:active {
+      transform: scale(0.98);
+    }
+    
+    /* ========== 结果页 - 极简清晰版 ========== */
+    
+    /* 结果页内容容器 */
+    .result-page-content {
+      padding: 24px 20px 32px;
+      min-height: 100vh;
+    }
+    
+    /* 1. 核心人格揭晓区 - 超大醒目 */
+    .result-hero-v2 {
+      text-align: center;
+      padding: 40px 0 24px;
+    }
+    .result-name-wrapper {
+      margin-bottom: 8px;
+    }
+    .result-name-v2 {
+      font-size: 64px !important;
+      font-weight: 800;
+      margin: 0;
+      text-shadow: 0 0 60px currentColor, 0 4px 30px rgba(0,0,0,0.6);
+      line-height: 1;
+      letter-spacing: 2px;
+    }
+    .result-rarity-v2 {
+      font-size: 14px;
+      color: #FFD700;
+      margin: 0 0 10px 0;
+      font-weight: 500;
+    }
+    .result-summary-v2 {
+      font-size: 17px;
+      color: rgba(255,255,255,0.9);
+      margin: 0 0 16px 0;
+      font-weight: 400;
+    }
+    .slogan-box-v2 {
+      display: inline-block;
+      background: rgba(255,224,102,0.12);
+      border: 1px solid rgba(255,224,102,0.4);
+      border-radius: 24px;
+      padding: 10px 20px;
+      margin: 0;
+    }
+    .slogan-text-v2 {
+      font-size: 15px;
+      color: #FFE066;
+    }
+    
+    /* 2. 特质标签 - 横向排列 */
+    .traits-section-v2 {
+      margin-bottom: 24px;
+    }
+    .traits-tags-v2 {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .trait-tag {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.9);
+    }
+    
+    /* 3. 详细分析 - 可展开 */
+    .depth-section-v2 {
+      margin-bottom: 32px;
+    }
+    .depth-toggle {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    .depth-toggle:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .depth-toggle-title {
+      font-size: 15px;
+      color: rgba(255,255,255,0.9);
+    }
+    .depth-toggle-icon {
+      color: rgba(255,255,255,0.5);
+      transition: transform 0.3s;
+    }
+    .depth-toggle.expanded .depth-toggle-icon {
+      transform: rotate(180deg);
+    }
+    .depth-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+    }
+    .depth-content.expanded {
+      max-height: 500px;
+    }
+    .depth-inner {
+      padding: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+    }
+    .depth-text {
+      font-size: 15px;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.8;
+    }
+    .depth-text p {
+      margin: 0 0 12px 0;
+    }
+    .depth-text p:last-child {
+      margin-bottom: 0;
+    }
+    
+    /* 4. 操作按钮 */
+    .action-section-v2 {
+      display: flex;
+      gap: 12px;
+    }
+    .share-btn-v2 {
+      flex: 1;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #FF00FF, #00FFFF);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255,0,255,0.3);
+    }
+    .btn-ghost-v2 {
+      flex: 1;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      color: rgba(255,255,255,0.9);
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    /* 结果揭晓动画 - 各元素独立动画 */
+    .result-name-wrapper,
+    #pRarity,
+    .result-summary-v2,
+    .slogan-box-v2,
+    .traits-section-v2,
+    .depth-section-v2,
+    .action-section-v2 {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+    .result-name-wrapper.revealed,
+    #pRarity.revealed,
+    .result-summary-v2.revealed,
+    .slogan-box-v2.revealed,
+    .traits-section-v2.revealed,
+    .depth-section-v2.revealed,
+    .action-section-v2.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* pRarity ID选择器需要提升优先级 */
+    #pRarity {
+      font-size: 14px;
+      color: #FFD700;
+      margin: 0 0 10px 0;
+      font-weight: 500;
+    }
+    
+    /* 雷达图优化 */
+    .radar-container {
+      display: flex;
+      justify-content: center;
+      margin: 16px 0;
+    }
+    .radar-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+    .radar-wrapper canvas {
+      width: 120px !important;
+      height: 120px !important;
+    }
+    
+    /* 移动端安全区域适配 */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      .container {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+      }
+      .action-section {
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      }
+    }
+    
+    /* 小屏幕优化 */
+    @media (max-width: 360px) {
+      .perspective-section {
+        grid-template-columns: 1fr;
+      }
+      .dim-bar-label .dim-name {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 首页 -->
+    <div id="home" class="page active">
+      <div class="home-content">
+        <!-- Logo区 -->
+        <div class="hero">
+          <h1>DATI</h1>
+          <p>数智人格测试</p>
+        </div>
+        
+        <!-- 核心钩子 -->
+        <div class="hook-section">
+          <div class="hook-icon">🤖</div>
+          <p class="hook-text">还在焦虑AI取代你？</p>
+          <p class="hook-highlight">3分钟，看清你和AI的关系</p>
+        </div>
+        
+        <!-- 维度说明卡片 -->
+        <div class="dim-cards">
+          <div class="dim-card">
+            <div class="dim-icon dim-icon-red">🧠</div>
+            <div class="dim-info">
+              <div class="dim-name">AI心态</div>
+            </div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-icon dim-icon-yellow">🤝</div>
+            <div class="dim-info">
+              <div class="dim-name">融合程度</div>
+            </div>
+          </div>
+          <div class="dim-card">
+            <div class="dim-icon dim-icon-green">🔐</div>
+            <div class="dim-info">
+              <div class="dim-name">隐私边界</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 人格预览区 -->
+        <div class="personality-preview">
+          <div class="preview-title">测试会揭示你的「AI人格」</div>
+          <div class="preview-cards">
+            <div class="preview-card" style="background: rgba(255,71,87,0.15); border: 1px solid rgba(255,71,87,0.3);">
+              <span class="card-icon">🏃</span>
+              <span class="card-name">隐士</span>
+              <span class="card-desc">互联网查无此人</span>
+            </div>
+            <div class="preview-card" style="background: rgba(255,195,18,0.15); border: 1px solid rgba(255,195,18,0.3);">
+              <span class="card-icon">😌</span>
+              <span class="card-name">正常人</span>
+              <span class="card-desc">90%的人都是这样</span>
+            </div>
+            <div class="preview-card" style="background: rgba(46,213,115,0.15); border: 1px solid rgba(46,213,115,0.3);">
+              <span class="card-icon">😴</span>
+              <span class="card-name">躺平</span>
+              <span class="card-desc">AI替我上班</span>
+            </div>
+          </div>
+          <p class="preview-more">还有 24 种人格，等你发现 →</p>
+        </div>
+        
+        <!-- 主CTA按钮 -->
+        <button class="btn-main" id="startBtn" onclick="startQuiz()">
+          <span>开始测试 →</span>
+        </button>
+        
+        <!-- 信任信号 -->
+        <div class="proof-section">
+          <div class="proof-item">
+            <span class="proof-icon">👥</span>
+            <span>已有 <strong>128,947</strong> 人测出AI人格</span>
+          </div>
+          <div class="proof-item proof-highlight">
+            <span class="proof-icon">🔒</span>
+            <span>结果仅本地保存，不上传任何数据</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 测试页 -->
+    <div id="quiz" class="page">
+      <!-- 顶部Header -->
+      <div class="quiz-header">
+        <button class="back-btn" onclick="goHome()">✕</button>
+        <div class="quiz-num">
+          <span id="curNum">1</span>/30
+          <div class="progress-inline">
+            <div id="progressBar" class="progress-bar-inline"></div>
+          </div>
+        </div>
+        <span id="dimTag" class="quiz-dim"></span>
+      </div>
+      
+      <!-- 内容区 -->
+      <div class="quiz-content">
+        <div id="question" class="question"></div>
+        <div id="options"></div>
+        
+        <!-- 上一题按钮 -->
+        <div id="prevBtnContainer" style="margin-top:16px;display:none;">
+          <button id="prevBtn" onclick="prevQuestion()" style="
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+          ">← 上一题</button>
+        </div>
+        
+        <!-- 底部进度 -->
+        <div class="quiz-footer">
+          <div class="progress-bar-simple" id="progressBarSimple"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载页 - 游戏化过渡 -->
+    <div id="loading" class="page">
+      <div class="loading-container">
+        <!-- 标题 -->
+        <div class="loading-title">
+          <p style="font-size:18px;color:#fff;margin-bottom:8px">🎭 正在分析你的答案</p>
+          <p id="loadingDimText" style="font-size:13px;color:rgba(255,255,255,0.5)">解锁你的专属人格中...</p>
+        </div>
+        
+        <!-- 进度条容器 -->
+        <div class="progress-container">
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progressPercent">0%</span>
+          </div>
+        </div>
+        
+        <!-- 状态提示 -->
+        <div class="status-section">
+          <div class="status-item" id="statusItem1">
+            <span class="status-icon">⏳</span>
+            <span class="status-text">收集你的30道题答案</span>
+          </div>
+          <div class="status-item" id="statusItem2">
+            <span class="status-icon">🔢</span>
+            <span class="status-text">计算AI心态指数</span>
+          </div>
+          <div class="status-item" id="statusItem3">
+            <span class="status-icon">🔢</span>
+            <span class="status-text">计算AI融合指数</span>
+          </div>
+          <div class="status-item" id="statusItem4">
+            <span class="status-icon">🔢</span>
+            <span class="status-text">计算数据主权指数</span>
+          </div>
+          <div class="status-item" id="statusItem5">
+            <span class="status-icon">🎯</span>
+            <span class="status-text">生成你的人格画像</span>
+          </div>
+        </div>
+        
+        <!-- 小贴士 -->
+        <div class="loading-tip">
+          <p>✨ 越真实的回答，人格画像越准确</p>
+        </div>
+        
+        <!-- 返回按钮 - 移到加载页底部内侧 -->
+        <button class="back-edit-btn" onclick="backToQuiz()" style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);">← 返回修改答案</button>
+      </div>
+    </div>
+
+    <!-- 结果页 - 极简清晰版 -->
+    <div id="result" class="page">
+      <div class="result-page-content">
+        
+        <!-- 1. 核心人格揭晓区 - 最大最醒目 -->
+        <div class="result-hero-v2">
+          <div id="resultNameWrapper" class="result-name-wrapper">
+            <h1 id="pName" class="result-name-v2"></h1>
+          </div>
+          <p id="pRarity" class="result-rarity-v2"></p>
+          <p id="pSummary" class="result-summary-v2"></p>
+          <div id="sloganHighlight" class="slogan-box-v2">
+            <span id="sloganText" class="slogan-text-v2"></span>
+          </div>
+        </div>
+        
+        <!-- 2. 特质标签 - 一目了然 -->
+        <div id="traitsSection" class="traits-section-v2">
+          <div id="traitsList" class="traits-tags-v2"></div>
+        </div>
+        
+        <!-- 3. 你的特点 - 简单直白 -->
+        <div id="depthSection" class="depth-section-v2">
+          <button class="depth-toggle" id="depthToggle" onclick="toggleDepth()">
+            <span class="depth-toggle-title">📖 点击查看详细分析</span>
+            <span class="depth-toggle-icon">▼</span>
+          </button>
+          <div class="depth-content" id="depthContent">
+            <div class="depth-inner">
+              <div id="depthText" class="depth-text"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 4. 操作按钮 - 清晰明确 -->
+        <div id="actionSection" class="action-section-v2">
+          <button class="share-btn-v2" onclick="generateAndShowPoster()">
+            <span>📱 保存海报分享</span>
+          </button>
+          <button class="btn-ghost-v2" onclick="startQuiz()">
+            <span>🔄 再测一次</span>
+          </button>
+        </div>
+        
+      </div>
+    </div>
+      
+      <!-- 海报预览浮层 -->
+      <div id="posterOverlay" class="poster-overlay">
+        <div class="poster-modal">
+          <!-- 关闭按钮 -->
+          <button class="poster-close" onclick="closePosterOverlay()">×</button>
+          
+          <!-- 海报标题 -->
+          <div class="poster-modal-header">
+            <p class="poster-modal-title">✨ 专属海报</p>
+            <p class="poster-modal-hint">👆 长按图片保存到相册</p>
+          </div>
+          
+          <!-- 海报预览区 -->
+          <div class="poster-preview-container">
+            <img id="posterPreview" src="" class="poster-preview" alt="海报预览" />
+          </div>
+          
+          <!-- 操作提示 -->
+          <div class="poster-save-tip">
+            <span class="save-tip-icon">💡</span>
+            <span class="save-tip-text">保存后在朋友圈分享，让朋友们也来测测！</span>
+          </div>
+          
+          <!-- 操作按钮 -->
+          <div class="poster-actions">
+            <button onclick="savePoster()" class="poster-save-btn">
+              📥 保存海报
+            </button>
+            <button onclick="copyFriendText()" class="poster-copy-btn">
+              📋 复制文案
+            </button>
+          </div>
+          
+          <!-- 朋友圈文案 -->
+          <div class="poster-copy-section">
+            <p class="poster-copy-title">📝 朋友圈推荐文案</p>
+            <div class="poster-copy-box">
+              <p id="friendText" class="poster-copy-text"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script>
+    const questions = [
+      {dimension:'anxiety',text:'刷到"AI将在1年内取代XX职业"时，你的第一反应是？',options:['立刻打开招聘软件，开始海投简历','转发给同事吐槽，顺便问问他们慌不慌','划走，这种标题党我看了十年了','收藏起来，看看有没有能让我摸鱼的新工具','直接点赞转发，求求AI明天就来替我上班'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'看到别人用AI10分钟做完了你要熬3天的活时，你会？',options:['心里一紧，觉得自己随时会被淘汰','有点慌，偷偷去搜这个AI怎么用','关我屁事，我还是按老方法慢慢做','赶紧去要链接，以后我的活也交给AI','直接把自己的活甩给他："你用AI帮我也做一份呗"'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'你最怕AI做到什么程度？',options:['比我聪明，比我能干，还比我便宜','能取代我80%的日常工作','没什么好怕的，AI只是个工具','最怕AI不够聪明，不能帮我干更多活','最怕AI不能替我开会、替我挨骂、替我写检讨'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'如果公司强制要求所有人必须使用AI工具，你会？',options:['非常抵触，觉得这是在逼我失业','有点不情愿，但没办法只能硬着头皮学','无所谓，让用就用呗','太好了，终于可以光明正大地用AI摸鱼了','举双手双脚赞成！早就想让AI替我干活了'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'你有没有过"AI做的比我好，我好像没什么价值"的想法？',options:['经常有，已经开始怀疑人生了','偶尔有，尤其是看到AI生成的作品时','从来没有，AI没有灵魂和创造力','正好相反，AI做的越好，我越轻松','求求AI再厉害一点，最好能替我吃饭睡觉谈恋爱'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'你觉得AI最终会取代谁？',options:['大部分普通人，包括我自己','所有做重复性工作的人','只会偷懒的人，不会取代认真工作的人','不会用AI的人，会用AI的人会提前退休','老板和管理层！以后我们只需要给AI发指令'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'看到有人说"AI会让人类变得越来越懒"时，你会？',options:['深表赞同，人类正在亲手毁掉自己','有点道理，现在很多人连字都不会写了','关我屁事，我自己不懒就行','懒是人类进步的动力，AI就是为了让我们偷懒的','能让AI干的事为什么要自己干？懒才是真理'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'如果有一天你的工作100%可以被AI替代，你会？',options:['非常慌，不知道自己还能干嘛','赶紧学习新技能，找一个AI做不了的事','走一步看一步，船到桥头自然直','太好了！终于可以不用上班了','直接躺平，让AI赚钱养我，我负责吃喝玩乐'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'你会担心自己的孩子未来被AI取代吗？',options:['非常担心，不知道该让孩子学什么','有点担心，会让孩子早点接触AI','不担心，车到山前必有路','不担心，未来AI会帮孩子干很多活','太好了！以后孩子也不用上学写作业了'],scores:[-2,-1,0,1,2]},
+      {dimension:'anxiety',text:'如果可以给AI的发展速度按一个按钮，你会按？',options:['停止键，让AI永远不要再发展了','减速键，给人类多留一点时间','正常键，顺其自然就好','加速键，让AI快点帮我们解决更多问题','快进键，直接跳到AI能养人类的那一天'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'写任何东西之前，你的第一反应是？',options:['自己从头开始写，绝对不用AI','先自己想个大概，实在写不出来再找AI','先让AI写个初稿，自己再改改','直接让AI写，自己只需要改个名字','连需求都不想想，直接把题目扔给AI'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'遇到任何问题时，你会先找谁？',options:['自己翻书查资料，绝对不相信网上的东西','问身边的朋友/家人，他们比AI靠谱','先搜百度，搜不到再问AI','直接问AI，AI比任何人都靠谱','只问AI，其他人的答案我都不信'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'没有AI的话，你的生活/工作效率会下降多少？',options:['完全没影响，我从来不用AI','下降一点点，几乎感觉不到','下降一半左右，很多活要花双倍时间','下降80%，基本什么都干不了','直接摆烂，没有AI我根本不想干活'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'你最常用AI做什么？',options:['什么都不用，AI都是骗人的','偶尔用来查个资料、算个题','写文案、做PPT、写作业、做表格','生成图片、视频、表情包，做旅游攻略','帮我回消息、吵架，做决策、聊天解闷'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'当AI生成的内容有错误时，你会？',options:['你看！我就说AI不靠谱吧！以后再也不用了','自己手动一点点修改错误','告诉AI哪里错了，让它重新生成','直接复制粘贴，反正没人会仔细看','根本不检查，AI说什么就是什么'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'你每天使用AI工具的时间大概是？',options:['0分钟，我手机上没有任何AI应用','不到30分钟，偶尔用一下','1-3小时，工作生活都离不开','3-6小时，比我玩手机的时间还长','除了睡觉，几乎都在和AI打交道'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'如果所有AI应用突然永久不能用了，你会？',options:['普天同庆！人类终于得救了','有点不方便，但过几天就适应了','感觉生活少了点什么，浑身不自在','非常焦虑，很多事都不知道该怎么做了','生无可恋，感觉回到了原始社会'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'你觉得自己和AI的关系是？',options:['敌人，AI会抢走我的一切','陌生人，和我没什么交集','一个好用的工具，仅此而已','最好的助手，什么事都可以交给它','我的外挂，没有它我就是个废物'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'你会向身边的人推荐AI工具吗？',options:['绝对不会，我不想别人比我效率高','不会，别人用不用关我屁事','有人问的话就推荐一下','会主动推荐，真的能省很多事','逢人就安利，不用AI的都是原始人'],scores:[-2,-1,0,1,2]},
+      {dimension:'fusion',text:'如果可以把你的大脑和AI连接起来，你会？',options:['宁死不从，绝对不能让AI入侵我的大脑','绝对不会，太危险了','可以考虑，看看有什么好处','当然愿意，这样我就不用学习了','立刻连接！最好把所有知识都直接灌进我脑子里'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'注册一个新APP时，你会怎么填写个人信息？',options:['全部填假的，连性别年龄都是编的','只填手机号，其他所有信息一律空着','如实填写基本信息，敏感信息不填','全部如实填写，反正也没什么好隐瞒的','不仅如实填写，还主动授权所有权限'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'你会为了什么东西放弃自己的个人信息？',options:['什么都不会，我的信息很重要','最多为了10块钱的优惠券','为了免费使用APP的基本功能','为了一杯免费奶茶/一个鸡蛋/一包纸巾','只要能给我一点好处，什么信息都可以给'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'去餐厅吃饭，服务员让你扫码点餐时，你会？',options:['直接拒绝，要求纸质菜单，用不了就换一家','扫码，但拒绝授权任何权限','扫码点餐，该授权的就授权','直接扫码，授权所有权限，快点上菜就行','不仅扫码，还关注公众号、加入会员领优惠券'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'看到APP请求"获取你的位置信息"时，你会？',options:['直接拒绝，我在哪关你屁事','选择"仅在使用时允许"，用完立刻关掉','无所谓，允许就允许呗','直接选择"始终允许"，省得以后再弹出来','不仅允许位置，还开启精准定位，让它更懂我'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'你会清理自己的上网痕迹吗？',options:['每次用完浏览器都清空所有历史记录','每周清理一次','想起来就清理一下，想不起来就算了','从来不清，清理了多不方便啊','不仅不清理，还主动同步所有数据到云端'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'你怎么看待"大数据杀熟"这件事？',options:['深恶痛绝，只要发现立刻卸载','非常反感，但没办法只能接受','无所谓，反正大家都被杀','能理解，商家也要赚钱嘛','杀熟就杀熟呗，只要能给我提供便利就行'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'你会在网上发布自己的真实照片和个人信息吗？',options:['绝对不会，网上都是坏人','只会发一些没有脸的风景照','偶尔会发一些生活照','经常发，让大家了解我的生活','什么都发，包括自己的日常和心情'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'收快递时，你会怎么填写自己的信息？',options:['全部填假的，只写小区地址和虚拟手机号','只写小区地址，不写具体门牌号','如实填写地址和手机号','如实填写，还会开启快递柜代收','直接让快递员送上门，方便最重要'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'你会使用人脸支付/人脸解锁功能吗？',options:['绝对不会，太不安全了','很少用，一般都用密码','有时候会用，比较方便','经常用，比密码方便多了','只要有人脸功能，绝对不用其他方式'],scores:[-2,-1,0,1,2]},
+      {dimension:'data',text:'如果可以选择，你希望自己在互联网上是？',options:['一个完全没有痕迹的幽灵','一个只有很少痕迹的普通人','一个正常的互联网用户','一个被大数据精准服务的人','一个完全透明的人，让AI比我自己还懂我'],scores:[-2,-1,0,1,2]}
+    ];
+
+    const personalities = {
+      // ========== 第一类：🔴 AI恐慌者 ==========
+      'n-n-n':{name:'隐士',summary:'互联网查无此人',color:'#FF4757',slogan:'互联网没有我的传说',traits:['不用AI不发动态','不透露真实信息','保护隐私到极致'],selfView:'保护隐私的智者',othersView:'神秘的社恐怪人',bestMatch:'旁观者',worstMatch:'神仙',aiTools:['计算器','纸质笔记本']},
+      'n-n-p':{name:'裸慌',summary:'一边裸奔一边害怕',color:'#FF4757',slogan:'我害怕AI，但AI根本不在乎我',traits:['什么信息都敢给','每天骂大数据杀熟','警惕但行动跟不上'],selfView:'警惕性很高的人',othersView:'又菜又爱玩的胆小鬼',bestMatch:'工慌',worstMatch:'新人类',aiTools:['无痕浏览器','虚拟手机号小号']},
+      'n-nn-n':{name:'杞人',summary:'每天担心世界末日',color:'#FF4757',slogan:'AI是魔鬼，但我离不开它',traits:['看到AI新闻就焦虑','觉得人类要完了','想太多做太少'],selfView:'有远见的思想家',othersView:'想太多的神经病',bestMatch:'谨慎',worstMatch:'躺平',aiTools:['计算器','记事本']},
+      'n-p-n':{name:'守财奴',summary:'数据比命还重要',color:'#FF4757',slogan:'我的数据，谁都别碰',traits:['像守财奴一样守着数据','谁都别想拿','隐私高于一切'],selfView:'有原则的人',othersView:'抠门的守财奴',bestMatch:'谨慎',worstMatch:'裸慌',aiTools:['离线AI','开源LLM']},
+      'n-p-p':{name:'矛盾体',summary:'一边想死，一边活的很好',color:'#9B59B6',slogan:'我的精神状态：挺好的，就是不太好',traits:['一边离不开AI，一边骂AI','一边想躺平，一边焦虑到失眠','一边死守数据，一边为奶茶填手机号'],selfView:'一个复杂的、有深度的人',othersView:'精神分裂患者',rarity:'💜 全球仅2.5%',hidden:true,bestMatch:'囚徒',worstMatch:'正常人',aiTools:['所有AI，但用的时候都在骂']},
+      'nn-n-n':{name:'打工人',summary:'当代最标准的耗材',color:'#FFC312',slogan:'今天又担心被AI开除了',traits:['会用AI提高效率','总怕被AI开除','努力但焦虑'],selfView:'努力奋斗的好员工',othersView:'随时会被AI取代的工具',bestMatch:'摸鱼',worstMatch:'资本家',aiTools:['ChatGPT写周报','AI PPT助手','Copilot代码补全']},
+      'nn-p-n':{name:'工慌',summary:'用AI打工为老板赚钱',color:'#FFC312',slogan:'我为AI打工，AI为老板打工',traits:['熟练使用各种AI','每天担心失业','为他人做嫁衣'],selfView:'勤奋的打工人',othersView:'给AI打工的打工人',bestMatch:'便利',worstMatch:'神仙',aiTools:['Notion AI','Gamma演示','ChatPDF文档分析']},
+      'nn-nn-nn':{name:'囚徒',summary:'被AI绑架的人',color:'#FFC312',slogan:'我是AI的奴隶',traits:['没有AI活不下去','每天想卸载所有AI','矛盾挣扎'],selfView:'身不由己的受害者',othersView:'被手机控制的废物',bestMatch:'矛盾体',worstMatch:'山顶洞人',aiTools:['时间管理App','番茄钟','纸质书回归']},
+      'p-n-n':{name:'信徒',summary:'相信AI会毁灭人类',color:'#2ED573',slogan:'人生苦短，及时行乐',traits:['坚信AI会统治世界','已经放弃抵抗','悲观但不行动'],selfView:'清醒的悲观主义者',othersView:'传播焦虑的疯子',bestMatch:'杞人',worstMatch:'神仙',aiTools:['尽量不用AI','偶尔用用语音助手']},
+      
+      // ========== 第二类：🟡 佛系随缘人 ==========
+      'n-nn-nn':{name:'神仙',summary:'AI已经为你安排好了一切',color:'#FFD700',slogan:'别人上班我修仙，AI赚钱我花钱',traits:['AI替你上班、替你写作业','AI替你吵架、甚至替你谈恋爱','你只需要负责享受生活'],selfView:'已经提前退休的人生赢家',othersView:'上辈子拯救了银河系的幸运儿',rarity:'✨ 全球仅0.8% ✨',hidden:true,bestMatch:'新人类',worstMatch:'山顶洞人',aiTools:['所有AI工具（没有你不会用的）']},
+      'nn-nn-n':{name:'旁观者',summary:'AI时代的局外人',color:'#FFC312',slogan:'你们卷吧，我先撤了',traits:['不关心AI','不参与内卷','你卷你的我躺我的'],selfView:'超然物外的高人',othersView:'与世隔绝的原始人',bestMatch:'隐士',worstMatch:'新人类',aiTools:['偶尔用用微信','刷抖音杀时间']},
+      'nn-p-p':{name:'无所谓',summary:'什么都无所谓',color:'#FFC312',slogan:'只要不影响摸鱼，什么都好说',traits:['都行可以没关系','对AI无感','怎么都无所谓'],selfView:'心态好的佛系青年',othersView:'没有感情的机器人',bestMatch:'路人',worstMatch:'杞人',aiTools:['什么AI都行','能用就行']},
+      'nn-nn-p':{name:'路人',summary:'最没有存在感的人',color:'#FFC312',slogan:'AI是什么？能吃吗？',traits:['对什么都不感兴趣','对什么都无所谓','存在感极低'],selfView:'低调的普通人',othersView:'透明人',bestMatch:'无所谓',worstMatch:'资本家',aiTools:['很少用AI','基本不用']},
+      'p-nn-n':{name:'谨慎',summary:'小心翼翼用AI的人',color:'#FFC312',slogan:'用AI可以，但别想骗我的数据',traits:['用AI可以','但不能骗我数据','谨慎但不排斥'],selfView:'理性的消费者',othersView:'胆小怕事的人',bestMatch:'杞人',worstMatch:'裸慌',aiTools:['本地部署AI','开源LLM','隐私优先工具']},
+      'nn-p-nn':{name:'便利',summary:'怎么方便怎么来',color:'#FFC312',slogan:'便利是第一生产力',traits:['为了便利放弃一切','包括隐私','实用主义至上'],selfView:'聪明的实用主义者',othersView:'懒癌晚期患者',bestMatch:'工慌',worstMatch:'守财奴',aiTools:['所有效率App','一键优化工具','云端同步服务']},
+      'p-p-n':{name:'理性',summary:'和AI和平共处的人',color:'#FFC312',slogan:'AI是我的工具，不是我的主人',traits:['把AI当工具','不依赖也不排斥','保持独立思考'],selfView:'智慧的先行者',othersView:'装X的人',bestMatch:'平衡',worstMatch:'信徒',aiTools:['专业AI工具（代码、设计）']},
+      'p-p-nn':{name:'平衡',summary:'找到了完美平衡的人',color:'#FFC312',slogan:'我和AI是最好的合作伙伴',traits:['既享受AI的便利','也保持独立思考','中庸之道'],selfView:'人生赢家',othersView:'中庸的老好人',bestMatch:'理性',worstMatch:'终极躺',aiTools:['综合AI平台']},
+      'p-nn-p':{name:'摸鱼',summary:'用AI实现摸鱼自由',color:'#FFC312',slogan:'AI干活，我拿钱',traits:['用AI干完所有活','剩下的时间全部摸鱼','上班混日子的老油条'],selfView:'聪明的打工人',othersView:'上班混日子的老油条',bestMatch:'打工人',worstMatch:'山顶洞人',aiTools:['所有能提高效率的AI']},
+      'nn-nn-np':{name:'正常人',summary:'90%的人都是这样',color:'#FFC312',slogan:'我只是一个普通的人类',traits:['不焦虑不躺平','平平淡淡才是真','普通但真实'],selfView:'正常的普通人',othersView:'没有任何特点的人',bestMatch:'正常人',worstMatch:'神仙',aiTools:['主流通用AI（豆包、GPT）']},
+      
+      // ========== 第三类：🟢 AI躺平党 ==========
+      'n-pp-n':{name:'躺等',summary:'一直在等AI来救自己',color:'#2ED573',slogan:'AI什么时候才能统治世界',traits:['不用AI','但天天盼着AI能替自己上班','好吃懒做的梦想家'],selfView:'有梦想的人',othersView:'好吃懒做的废物',bestMatch:'躺平',worstMatch:'杞人',aiTools:['偶尔用AI摸鱼']},
+      'p-n-p':{name:'躺裸',summary:'为了躺平愿意裸奔',color:'#2ED573',slogan:'只要能躺平，裸奔也愿意',traits:['只要能躺平什么都给','不在乎隐私','躺平高于一切'],selfView:'豁达的人',othersView:'没有底线的人',bestMatch:'终极躺',worstMatch:'守财奴',aiTools:['所有AI，全开权限']},
+      'p-nn-nn':{name:'山顶洞人',summary:'成功在2026年活成了2000年的样子',color:'#555555',slogan:'任AI卷上天，我自岿然不动',traits:['不用AI、不用智能手机','连头像都是网图','任AI卷上天，你自岿然不动'],selfView:'清醒的先知',othersView:'从2000年穿越来的古人',rarity:'⛰️ 全球仅1.2% ⛰️',hidden:true,bestMatch:'隐士',worstMatch:'神仙',aiTools:['拒绝所有电子工具']},
+      'n-pp-nn':{name:'慎躺',summary:'小心翼翼地躺平',color:'#2ED573',slogan:'用AI摸鱼，安全第一',traits:['躺平但不摆烂','摸鱼但不耽误工作','安全第一'],selfView:'聪明的躺平者',othersView:'摸鱼的老油条',bestMatch:'摸鱼',worstMatch:'山顶洞人',aiTools:['公司允许的AI工具']},
+      'p-pn-n':{name:'躺平',summary:'当代最标准的躺平青年',color:'#2ED573',slogan:'AI替我上班，我替AI享受生活',traits:['人生目标AI养老','不上进但通透','躺平哲学'],selfView:'看透人生的智者',othersView:'不求上进的人',bestMatch:'躺等',worstMatch:'打工人',aiTools:['AI内容总结','AI旅行规划','AI食谱推荐']},
+      'p-nn-np':{name:'资本家',summary:'别人给AI打工，AI给我打工',color:'#3498DB',slogan:'别人给AI打工，AI给我打工',traits:['你不用干活AI替你干','你不用赚钱AI替你赚','动动嘴就财富自由'],selfView:'未来的首富',othersView:'剥削AI的周扒皮',rarity:'💰 全球仅3.1% 💰',hidden:true,bestMatch:'摸鱼',worstMatch:'打工人',aiTools:['AI创业工具','AI投资分析','AI自动化商业']},
+      'p-pn-nn':{name:'终极躺',summary:'为了躺平可以放弃一切',color:'#2ED573',slogan:'我的人生目标就是什么都不干',traits:['能让AI干的不自己干','躺到极致','彻底解放'],selfView:'人生赢家',othersView:'烂泥扶不上墙',bestMatch:'躺裸',worstMatch:'理性',aiTools:['AutoGPT','AI自动化工具','家务机器人']},
+      'p-p-p':{name:'新人类',summary:'AI时代的原住民',color:'#2ED573',slogan:'我是赛博新人类',traits:['从出生就在AI时代','没有AI活不下去','赛博原住民'],selfView:'未来的主人',othersView:'被AI洗脑的人',bestMatch:'神仙',worstMatch:'山顶洞人',aiTools:['最新AI技术（数字人、AI视频）']},
+      
+      // ========== 默认人格 ==========
+      'default':{name:'正常人',summary:'90%的人都是这样',color:'#FFC312',slogan:'我只是一个普通的人类',traits:['不焦虑不躺平','平平淡淡才是真','普通但真实'],selfView:'正常的普通人',othersView:'没有任何特点的人',bestMatch:'正常人',worstMatch:null,aiTools:['微信','支付宝','日常AI助手']}
+    };
+
+    let currentIndex = 0;
+    let answers = new Array(30).fill(null);
+    let scores = {anxiety:0,fusion:0,data:0};
+    let currentPersonality = null;
+    let answeredCount = 0;
+
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+      const targetPage = document.getElementById(id);
+      targetPage.style.display = 'block';
+      targetPage.classList.add('active');
+      if (window.scrollTo) window.scrollTo(0, 0);
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      if (targetPage.scrollTop !== undefined) targetPage.scrollTop = 0;
+      if (targetPage.scrollIntoView) targetPage.scrollIntoView({ behavior: 'instant', block: 'start' });
+      const container = document.querySelector('.container');
+      if (container && container.scrollTop !== undefined) container.scrollTop = 0;
+    }
+
+    function goHome() {
+      showPage('home');
+    }
+
+    function startQuiz() {
+      currentIndex = 0;
+      answers = new Array(30).fill(null);
+      scores = {anxiety:0,fusion:0,data:0};
+      answeredCount = 0;
+      showPage('quiz');
+      renderQuestion();
+    }
+    
+    // 上一题功能
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        // 如果当前题有答案，先清除分数
+        if (answers[currentIndex] !== null) {
+          const prevScore = questions[currentIndex].scores[answers[currentIndex]];
+          scores[questions[currentIndex].dimension] -= prevScore;
+        }
+        
+        currentIndex--;
+        renderQuestion();
+      }
+    }
+    
+    // 更新上一题按钮显示
+    function updatePrevButton() {
+      const prevBtnContainer = document.getElementById('prevBtnContainer');
+      if (prevBtnContainer) {
+        // 只有不是第一题时显示
+        prevBtnContainer.style.display = currentIndex > 0 ? 'block' : 'none';
+      }
+    }
+    
+    // 页面加载完成后绑定事件
+    document.addEventListener('DOMContentLoaded', function() {
+      const startBtn = document.getElementById('startBtn');
+      if (startBtn) {
+        startBtn.addEventListener('click', function() {
+          startQuiz();
+        });
+      }
+    });
+    
+    // 备用：如果DOMContentLoaded已触发，直接绑定
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(function() {
+        const startBtn = document.getElementById('startBtn');
+        if (startBtn && !startBtn.onclick) {
+          startBtn.addEventListener('click', function() {
+            startQuiz();
+          });
+        }
+      }, 100);
+    }
+
+    // ========== 底部进度条渲染 ==========
+    function renderProgressBarSimple() {
+      const container = document.getElementById('progressBarSimple');
+      if (!container) return;
+      container.innerHTML = '';
+      for (let i = 0; i < 30; i++) {
+        const seg = document.createElement('div');
+        seg.className = 'progress-segment';
+        if (i < currentIndex) seg.classList.add('completed');
+        if (i === currentIndex) seg.classList.add('current');
+        container.appendChild(seg);
+      }
+    }
+    
+    // ========== 最后一题生成结果按钮 ==========
+    function renderLastQuestionGenerateBtn() {
+      const container = document.getElementById('progressBarSimple');
+      if (!container) return;
+      container.innerHTML = '';
+      // 显示"生成结果"大按钮
+      const btn = document.createElement('button');
+      btn.className = 'generate-btn';
+      btn.innerHTML = '<span>✨ 生成结果</span>';
+      btn.onclick = function() {
+        calculateResult();
+      };
+      container.appendChild(btn);
+    }
+    
+    // ========== 维度标签显示逻辑 ==========
+    let lastDim = null;
+    function updateDimTag() {
+      const q = questions[currentIndex];
+      const dimLabels = {anxiety:'AI心态',fusion:'AI融合',data:'数据主权'};
+      const dimColors = {anxiety:'#FF4757',fusion:'#FFC312',data:'#2ED573'};
+      const dimEl = document.getElementById('dimTag');
+      dimEl.textContent = dimLabels[q.dimension];
+      dimEl.style.cssText = `background:${dimColors[q.dimension]}22;color:${dimColors[q.dimension]}`;
+      
+      // 切换维度时显示标签动画
+      if (lastDim !== q.dimension) {
+        dimEl.classList.remove('show');
+        setTimeout(() => {
+          dimEl.classList.add('show');
+        }, 100);
+        lastDim = q.dimension;
+      }
+    }
+
+    function renderQuestion() {
+      const q = questions[currentIndex];
+      document.getElementById('curNum').textContent = currentIndex + 1;
+      document.getElementById('progressBar').style.width = ((currentIndex+1)/30*100) + '%';
+      
+      // 更新维度标签
+      updateDimTag();
+      
+      // 更新上一题按钮
+      updatePrevButton();
+      
+      document.getElementById('question').textContent = q.text;
+      
+      // 最后一题特殊处理 - 自动生成结果
+      if (currentIndex === 29) {
+        // 最后一题也显示上一题按钮
+        updatePrevButton();
+      } else {
+        renderProgressBarSimple();
+      }
+      
+      const optionsEl = document.getElementById('options');
+      optionsEl.innerHTML = '';
+      q.options.forEach((opt,i)=>{
+        const btn = document.createElement('button');
+        btn.className = 'option' + (answers[currentIndex]===i?' selected':'');
+        btn.textContent = opt;
+        btn.dataset.idx = i;
+        btn.onclick = function() { selectOption(parseInt(this.dataset.idx)); };
+        btn.ontouchstart = function(e) {
+          e.preventDefault();
+          selectOption(parseInt(this.dataset.idx));
+        };
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function selectOption(idx) {
+      // 如果之前选过，需要先减去之前的分数
+      if (answers[currentIndex] !== null) {
+        const prevScore = questions[currentIndex].scores[answers[currentIndex]];
+        scores[questions[currentIndex].dimension] -= prevScore;
+      }
+      
+      // 加上新分数
+      answers[currentIndex] = idx;
+      scores[questions[currentIndex].dimension] += questions[currentIndex].scores[idx];
+      
+      // 高亮选中项 - 直接用class控制
+      const options = document.querySelectorAll('.option');
+      options.forEach((opt, i) => {
+        if (i === idx) {
+          opt.classList.add('selected');
+        } else {
+          opt.classList.remove('selected');
+        }
+      });
+      
+      // 等待400ms后自动下一题
+      setTimeout(function() {
+        if (currentIndex === 29) {
+          // 最后一题，直接生成结果
+          calculateResult();
+        } else {
+          // 自动下一题
+          currentIndex++;
+          renderQuestion();
+        }
+      }, 400);
+    }
+    
+    function calculateResult() {
+      // 计分规则：>=5 正向(p), <=-5 负向(n), 其他中立(nn)
+      const a = scores.anxiety >= 5 ? 'p' : scores.anxiety <= -5 ? 'n' : 'nn';
+      const f = scores.fusion >= 5 ? 'p' : scores.fusion <= -5 ? 'n' : 'nn';
+      const d = scores.data >= 5 ? 'p' : scores.data <= -5 ? 'n' : 'nn';
+      const key = `${a}-${f}-${d}`;
+      currentPersonality = personalities[key] || personalities['default'];
+      showPage('loading');
+      startLoadingAnimation();
+    }
+    
+    function startLoadingAnimation() {
+      let currentStep = 0;
+      const totalDuration = 5000; // 5秒加载时间
+      
+      // 初始化状态
+      for (let i = 1; i <= 5; i++) {
+        const item = document.getElementById('statusItem' + i);
+        if (item) {
+          item.className = 'status-item';
+        }
+      }
+      
+      // 进度条和百分比文字
+      const progressFill = document.getElementById('progressFill');
+      const progressPercent = document.getElementById('progressPercent');
+      const loadingDimText = document.getElementById('loadingDimText');
+      
+      // 状态文本变化
+      const dimTexts = [
+        '解锁你的专属人格中...',
+        '收集你的30道题答案中...',
+        '正在计算三个核心指数...',
+        '正在匹配人格类型...',
+        '马上就好...'
+      ];
+      
+      // 启动动画
+      const startTime = Date.now();
+      const animationInterval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / totalDuration, 1);
+        
+        // 更新进度条
+        progressFill.style.width = (progress * 100) + '%';
+        
+        // 更新百分比文字
+        progressPercent.textContent = Math.floor(progress * 100) + '%';
+        
+        // 更新状态文本
+        const textIndex = Math.min(Math.floor(progress * 5), 4);
+        loadingDimText.textContent = dimTexts[textIndex];
+        
+        // 更新状态步骤
+        const newStep = Math.min(Math.floor(progress * 5) + 1, 5);
+        if (newStep !== currentStep && newStep <= 5) {
+          // 标记上一个步骤为完成
+          if (currentStep > 0) {
+            const prevItem = document.getElementById('statusItem' + currentStep);
+            if (prevItem) {
+              prevItem.className = 'status-item done';
+              prevItem.querySelector('.status-icon').textContent = '✓';
+            }
+          }
+          // 高亮当前步骤
+          currentStep = newStep;
+          const item = document.getElementById('statusItem' + currentStep);
+          if (item) {
+            item.className = 'status-item active';
+          }
+        }
+        
+        // 完成
+        if (progress >= 1) {
+          clearInterval(animationInterval);
+          
+          // 标记最后一步完成
+          const finalItem = document.getElementById('statusItem5');
+          if (finalItem) {
+            finalItem.className = 'status-item done';
+            finalItem.querySelector('.status-icon').textContent = '✓';
+          }
+          
+          // 完成状态
+          progressPercent.textContent = '100%';
+          loadingDimText.textContent = '人格画像生成完成!';
+          
+          // 显示结果
+          setTimeout(showResult, 500);
+        }
+      }, 50);
+    }
+
+    function showResult() {
+      showPage('result');
+      const p = currentPersonality;
+      
+      // 隐藏所有揭晓元素
+      document.getElementById('resultNameWrapper').classList.remove('revealed');
+      document.getElementById('pRarity').classList.remove('revealed');
+      document.getElementById('pSummary').classList.remove('revealed');
+      document.getElementById('sloganHighlight').classList.remove('revealed');
+      document.getElementById('traitsSection').classList.remove('revealed');
+      document.getElementById('depthSection').classList.remove('revealed');
+      document.getElementById('actionSection').classList.remove('revealed');
+      
+      // 填充基本数据
+      document.getElementById('pName').textContent = p.name;
+      document.getElementById('pName').style.color = p.color;
+      // 稀有度
+      let rarityText = '';
+      if (p.rarity) {
+        rarityText = p.rarity;
+      }
+      document.getElementById('pRarity').textContent = rarityText;
+      document.getElementById('pRarity').style.display = rarityText ? 'block' : 'none';
+      document.getElementById('pSummary').textContent = p.summary;
+      document.getElementById('sloganText').textContent = '"' + p.slogan + '"';
+      
+      // 核心特质 - 标签云
+      const traitsEl = document.getElementById('traitsList');
+      traitsEl.innerHTML = '';
+      p.traits.forEach(t => {
+        const span = document.createElement('span');
+        span.className = 'trait-tag';
+        span.textContent = t;
+        traitsEl.appendChild(span);
+      });
+      
+      // 深度解读
+      const depthText = generateDepthAnalysis(p);
+      document.getElementById('depthText').innerHTML = depthText;
+      
+      // 重置展开状态
+      document.getElementById('depthToggle').classList.remove('expanded');
+      document.getElementById('depthContent').classList.remove('expanded');
+      
+      // 分步揭晓动画 - 简化版
+      setTimeout(() => {
+        document.getElementById('resultNameWrapper').classList.add('revealed');
+      }, 100);
+      
+      setTimeout(() => {
+        document.getElementById('pRarity').classList.add('revealed');
+      }, 200);
+      
+      setTimeout(() => {
+        document.getElementById('pSummary').classList.add('revealed');
+      }, 300);
+      
+      setTimeout(() => {
+        document.getElementById('sloganHighlight').classList.add('revealed');
+      }, 400);
+      
+      setTimeout(() => {
+        document.getElementById('traitsSection').classList.add('revealed');
+      }, 500);
+      
+      setTimeout(() => {
+        document.getElementById('depthSection').classList.add('revealed');
+      }, 600);
+      
+      setTimeout(() => {
+        document.getElementById('actionSection').classList.add('revealed');
+      }, 700);
+    }
+    
+    // 更新维度条数据
+    function updateDimensionBars() {
+      const vals = [scores.anxiety, scores.fusion, scores.data];
+      const dims = ['anxiety', 'fusion', 'data'];
+      const colors = ['#FF6B7A', '#4ECDC4', '#9B59B6'];
+      
+      dims.forEach((dim, i) => {
+        const v = vals[i];
+        let text = '';
+        let percent = 50;
+        
+        if (dim === 'anxiety') {
+          if (v >= 5) { text = '淡定'; percent = 60 + Math.min(30, v * 2); }
+          else if (v <= -5) { text = '焦虑'; percent = 40 - Math.max(-30, v * 2); }
+          else { text = '平常'; percent = 50; }
+        } else if (dim === 'fusion') {
+          if (v >= 5) { text = '融合'; percent = 60 + Math.min(30, v * 2); }
+          else if (v <= -5) { text = '独立'; percent = 40 - Math.max(-30, v * 2); }
+          else { text = '适中'; percent = 50; }
+        } else {
+          if (v >= 5) { text = '开放'; percent = 60 + Math.min(30, v * 2); }
+          else if (v <= -5) { text = '保守'; percent = 40 - Math.max(-30, v * 2); }
+          else { text = '平衡'; percent = 50; }
+        }
+        
+        document.getElementById(dim + 'Value').textContent = text;
+        const bar = document.getElementById(dim + 'Bar');
+        if (bar) {
+          bar.style.background = `linear-gradient(90deg, ${colors[i]}, ${colors[i]}88)`;
+          bar.style.width = Math.abs(percent - 50) + '%';
+          bar.style.marginLeft = percent < 50 ? '0' : 'auto';
+          bar.style.marginRight = percent >= 50 ? '0' : 'auto';
+          bar.style.position = 'relative';
+          bar.style.left = percent < 50 ? (50 - Math.abs(percent - 50)) + '%' : '50%';
+        }
+      });
+    }
+    
+    // 动画维度条
+    function animateDimensionBars() {
+      // 已经在 updateDimensionBars 中处理
+    }
+    
+    // 展开/收起深度解读
+    function toggleDepth() {
+      const toggle = document.getElementById('depthToggle');
+      const content = document.getElementById('depthContent');
+      
+      if (toggle.classList.contains('expanded')) {
+        toggle.classList.remove('expanded');
+        content.classList.remove('expanded');
+      } else {
+        toggle.classList.add('expanded');
+        content.classList.add('expanded');
+      }
+    }
+    
+    // 生成深度解读内容
+    function generateDepthAnalysis(p) {
+      const anxietyLevel = scores.anxiety >= 5 ? '高' : scores.anxiety <= -5 ? '低' : '中';
+      const fusionLevel = scores.fusion >= 5 ? '高' : scores.fusion <= -5 ? '低' : '中';
+      const dataLevel = scores.data >= 5 ? '高' : scores.data <= -5 ? '低' : '中';
+      
+      let content = '';
+      
+      // 第一段：性格概述
+      content += `<p>你是典型的「${p.name}」。你的AI心态指数${anxietyLevel === '高' ? '偏高' : anxietyLevel === '低' ? '偏低' : '中等'}，AI融合程度${fusionLevel === '高' ? '很高，你已经离不开AI了' : fusionLevel === '低' ? '较低，保持着相对独立' : '适中，理性地使用AI'}。</p>`;
+      
+      // 第二段：行为特点
+      content += `<p>在日常生活中，你${p.traits[0] || '呈现出独特的AI使用习惯'}。面对AI带来的变化，你${scores.anxiety >= 0 ? '表现得比较淡定' : '会有一些焦虑和担忧'}。</p>`;
+      
+      // 第三段：人际关系
+      if (p.bestMatch) {
+        content += `<p>在社交中，你和「${p.bestMatch}」类型的人最合拍，因为你们在AI使用态度上有很多共同点。但要小心「${p.worstMatch || '与你截然相反的人'}'」，你们可能会因为观念差异产生摩擦。</p>`;
+      }
+      
+      // 第四段：未来建议
+      let advice = '';
+      if (anxietyLevel === '高') {
+        advice = '建议你适当放下焦虑，AI是工具而非威胁，学会与之共存会让生活更轻松。';
+      } else if (anxietyLevel === '低' && fusionLevel === '高') {
+        advice = '虽然你已经很适应AI时代，但也要注意保持独立思考的能力，不要过度依赖AI。';
+      } else if (dataLevel === '低') {
+        advice = '你对隐私的保护意识很强，这是好事。但在享受便利和保障安全之间找到平衡点会让你生活得更舒心。';
+      } else if (fusionLevel === '低') {
+        advice = '保持独立思考很好，但适当拥抱新工具可能会给你带来惊喜。';
+      } else {
+        advice = '你找到了不错的平衡点。继续保持这种理性而开放的态度，你已经是AI时代的赢家了！';
+      }
+      content += `<p>💡 ${advice}</p>`;
+      
+      return content;
+    }
+    
+    // ========== 海报相关函数 ==========
+    
+    // 生成并展示海报浮层
+    function generateAndShowPoster() {
+      const overlay = document.getElementById('posterOverlay');
+      overlay.classList.add('active');
+      
+      // 生成海报图片
+      generatePosterImage();
+      
+      // 设置朋友圈文案 - 更吸引人的版本
+      const p = currentPersonality;
+      const friendText = `🔥 刚测完！我的AI数智人格是「${p.name}」
+
+"${p.slogan}"
+
+✨ ${p.summary}
+
+${p.rarity ? p.rarity + '\n' : ''}#AI人格测试 #数智人格 #DATI`;
+
+      const friendTextEl = document.getElementById('friendText');
+      friendTextEl.textContent = friendText;
+    }
+    
+    // 生成海报图片
+    function generatePosterImage() {
+      const p = currentPersonality;
+      
+      // 创建海报画布 - 竖版 3:4 比例
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const width = 540;
+      const height = 780; // 增加高度以容纳维度条
+      canvas.width = width;
+      canvas.height = height;
+      
+      // 渐变背景
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, '#0A0E27');
+      gradient.addColorStop(0.5, '#1a1f3a');
+      gradient.addColorStop(1, '#0f1225');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+      
+      // 装饰粒子
+      ctx.fillStyle = 'rgba(0, 255, 255, 0.3)';
+      for (let i = 0; i < 30; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        const r = Math.random() * 2 + 1;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // 顶部装饰线
+      ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, 50);
+      ctx.lineTo(width - 40, 50);
+      ctx.stroke();
+      
+      // 品牌标题
+      ctx.font = 'bold 18px sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.textAlign = 'center';
+      ctx.fillText('DATI · 数智人格测试', width / 2, 78);
+      
+      // 人格名称
+      ctx.font = 'bold 48px sans-serif';
+      ctx.fillStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 25;
+      ctx.fillText(p.name, width / 2, 175);
+      ctx.shadowBlur = 0;
+      
+      // 稀有度
+      if (p.rarity) {
+        ctx.font = '13px sans-serif';
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText('🏆 ' + p.rarity, width / 2, 205);
+      }
+      
+      // 简介
+      ctx.font = '16px sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.fillText(p.summary, width / 2, 255);
+      
+      // 口头禅背景框
+      ctx.fillStyle = 'rgba(255, 224, 102, 0.1)';
+      ctx.strokeStyle = 'rgba(255, 224, 102, 0.3)';
+      ctx.lineWidth = 1;
+      roundRect(ctx, 40, 280, width - 80, 60, 10);
+      ctx.fill();
+      ctx.stroke();
+      
+      // 口头禅
+      ctx.font = '15px sans-serif';
+      ctx.fillStyle = '#FFE066';
+      ctx.fillText('"' + p.slogan + '"', width / 2, 318);
+      
+      // 维度条区域
+      const dimY = 370;
+      const dimLabels = [
+        { name: 'AI心态', value: scores.anxiety, color: '#FF6B7A', left: '焦虑', right: '淡定' },
+        { name: 'AI融合', value: scores.fusion, color: '#4ECDC4', left: '独立', right: '融合' },
+        { name: '数据主权', value: scores.data, color: '#9B59B6', left: '保守', right: '开放' }
+      ];
+      
+      dimLabels.forEach((dim, i) => {
+        const barY = dimY + i * 45;
+        
+        // 维度标签
+        ctx.font = '12px sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.textAlign = 'left';
+        ctx.fillText(dim.name, 40, barY);
+        
+        // 维度条背景
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        roundRect(ctx, 40, barY + 8, width - 80, 10, 5);
+        ctx.fill();
+        
+        // 中心线
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(width / 2, barY + 8);
+        ctx.lineTo(width / 2, barY + 18);
+        ctx.stroke();
+        
+        // 维度条填充
+        const percent = Math.max(10, Math.min(90, ((dim.value + 20) / 40) * 100));
+        const barWidth = Math.abs(percent - 50);
+        const barX = percent >= 50 ? width / 2 : percent;
+        
+        ctx.fillStyle = dim.color;
+        roundRect(ctx, barX, barY + 8, barWidth, 10, 5);
+        ctx.fill();
+        
+        // 端点标签
+        ctx.font = '10px sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.textAlign = 'left';
+        ctx.fillText(dim.left, 40, barY + 30);
+        ctx.textAlign = 'right';
+        ctx.fillText(dim.right, width - 40, barY + 30);
+      });
+      
+      // 特质标签
+      const traits = p.traits;
+      const tagWidth = 85;
+      const tagHeight = 30;
+      const gap = 8;
+      let startX = (width - (traits.length * tagWidth + (traits.length - 1) * gap)) / 2;
+      let y = 530;
+      
+      traits.forEach((trait, i) => {
+        if (i > 0 && startX + i * (tagWidth + gap) + tagWidth > width - 20) {
+          y += tagHeight + 8;
+          startX = (width - (traits.length * tagWidth + (traits.length - 1) * gap)) / 2;
+        }
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.lineWidth = 1;
+        roundRect(ctx, startX + i * (tagWidth + gap), y, tagWidth, tagHeight, 15);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.font = '12px sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.textAlign = 'center';
+        ctx.fillText(trait, startX + i * (tagWidth + gap) + tagWidth / 2, y + 18);
+      });
+      
+      // 底部装饰
+      const bottomY = 680;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.beginPath();
+      ctx.moveTo(40, bottomY);
+      ctx.lineTo(width - 40, bottomY);
+      ctx.stroke();
+      
+      // 二维码占位 - 优化样式
+      const qrSize = 90;
+      const qrX = width / 2 - qrSize / 2;
+      const qrY = bottomY + 15;
+      
+      // QR码背景
+      ctx.fillStyle = '#fff';
+      roundRect(ctx, qrX, qrY, qrSize, qrSize, 8);
+      ctx.fill();
+      
+      // QR码装饰图案（模拟二维码效果）
+      ctx.fillStyle = '#0A0E27';
+      // 左上角
+      ctx.fillRect(qrX + 10, qrY + 10, 25, 25);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(qrX + 15, qrY + 15, 15, 15);
+      ctx.fillStyle = '#0A0E27';
+      ctx.fillRect(qrX + 18, qrY + 18, 9, 9);
+      
+      // 右上角
+      ctx.fillStyle = '#0A0E27';
+      ctx.fillRect(qrX + qrSize - 35, qrY + 10, 25, 25);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(qrX + qrSize - 30, qrY + 15, 15, 15);
+      ctx.fillStyle = '#0A0E27';
+      ctx.fillRect(qrX + qrSize - 27, qrY + 18, 9, 9);
+      
+      // 左下角
+      ctx.fillStyle = '#0A0E27';
+      ctx.fillRect(qrX + 10, qrY + qrSize - 35, 25, 25);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(qrX + 15, qrY + qrSize - 30, 15, 15);
+      ctx.fillStyle = '#0A0E27';
+      ctx.fillRect(qrX + 18, qrY + qrSize - 27, 9, 9);
+      
+      // 中间装饰点
+      ctx.fillStyle = '#0A0E27';
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (Math.random() > 0.3) {
+            ctx.fillRect(qrX + 40 + i * 8, qrY + 40 + j * 8, 6, 6);
+          }
+        }
+      }
+      
+      // 提示文字
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.textAlign = 'center';
+      ctx.fillText('长按识别 测测你的AI人格', width / 2, bottomY + 120);
+      
+      // 水印
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.fillText('dati.vip', width - 50, height - 15);
+      
+      // 转换为图片并显示
+      const dataUrl = canvas.toDataURL('image/png');
+      document.getElementById('posterPreview').src = dataUrl;
+    }
+    
+    // 圆角矩形辅助函数
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    }
+    
+    // 关闭海报浮层
+    function closePosterOverlay() {
+      const overlay = document.getElementById('posterOverlay');
+      overlay.classList.remove('active');
+    }
+    
+    // 保存海报到相册
+    function savePoster() {
+      const posterImg = document.getElementById('posterPreview');
+      const link = document.createElement('a');
+      link.download = 'DATI_人格海报.png';
+      link.href = posterImg.src;
+      link.click();
+    }
+    
+    // 分享给朋友（复制图片）
+    function shareToFriend() {
+      // 提示用户截图分享
+      alert('请截图分享给朋友，或长按海报保存后发送');
+    }
+    
+    // 复制朋友圈文案
+    function copyFriendText() {
+      const text = document.getElementById('friendText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.poster-copy-btn');
+        btn.textContent = '已复制 ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '复制文案';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        // 降级方案
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('文案已复制，请到朋友圈粘贴');
+      });
+    }
+    
+    // 兼容旧函数
+    function showShare() { generateAndShowPoster(); }
+    function hideShare() { closePosterOverlay(); }
+    
+    // 更新维度进度条
+    function updateDimProgress() {
+      const vals = [scores.anxiety, scores.fusion, scores.data];
+      
+      vals.forEach((v, i) => {
+        // 将分数映射到 0-100%
+        const percent = Math.max(10, Math.min(90, ((v + 20) / 40) * 100));
+        const progressId = ['anxietyProgress', 'fusionProgress', 'dataProgress'][i];
+        const progressEl = document.getElementById(progressId);
+        if (progressEl) {
+          progressEl.style.width = percent + '%';
+        }
+      });
+    }
+    
+    function drawRadar() {
+      const canvas = document.getElementById('radar');
+      const ctx = canvas.getContext('2d');
+      const cx = 50, cy = 50, r = 40;
+      
+      ctx.clearRect(0, 0, 100, 100);
+      
+      // 背景网格
+      for(let i = 1; i <= 4; i++){
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * i / 4, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      
+      // 轴线
+      const labels = ['AI心态', 'AI融合', '数据主权'];
+      const vals = [scores.anxiety, scores.fusion, scores.data];
+      const colors = ['#FF6B7A', '#FFE066', '#4ECDC4'];
+      
+      for(let i = 0; i < 3; i++){
+        const angle = (i * 120 - 90) * Math.PI / 180;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      
+      // 数据区域
+      ctx.beginPath();
+      vals.forEach((v, i) => {
+        const angle = (i * 120 - 90) * Math.PI / 180;
+        const val = (v + 20) / 40;
+        const x = cx + Math.cos(angle) * r * Math.max(0, Math.min(1, val));
+        const y = cy + Math.sin(angle) * r * Math.max(0, Math.min(1, val));
+        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(255, 224, 102, 0.2)';
+      ctx.fill();
+      ctx.strokeStyle = '#FFE066';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      // 数据点
+      vals.forEach((v, i) => {
+        const angle = (i * 120 - 90) * Math.PI / 180;
+        const val = (v + 20) / 40;
+        const x = cx + Math.cos(angle) * r * Math.max(0, Math.min(1, val));
+        const y = cy + Math.sin(angle) * r * Math.max(0, Math.min(1, val));
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+      });
+      
+      // 更新数值显示 - 改为描述性文字
+      const getDimLabel = (dim, v) => {
+        if (dim === 'anxiety') {
+          if (v >= 8) return '焦虑';
+          if (v <= -8) return '淡定';
+          return '平常';
+        } else if (dim === 'fusion') {
+          if (v >= 8) return '深度';
+          if (v <= -8) return '独立';
+          return '适中';
+        } else {
+          if (v >= 8) return '开放';
+          if (v <= -8) return '保守';
+          return '平衡';
+        }
+      };
+      
+      document.getElementById('anxietyValue').textContent = getDimLabel('anxiety', vals[0]);
+      document.getElementById('fusionValue').textContent = getDimLabel('fusion', vals[1]);
+      document.getElementById('dataValue').textContent = getDimLabel('data', vals[2]);
+    }
+
+    // 兼容旧函数（使用新实现）
+    function goToSharePage() { generateAndShowPoster(); }
+    function copyToClipboard() { copyFriendText(); }
+    function saveShareImage() { savePoster(); }
+    
+    function drawShareCard() {
+      // 创建隐藏的 canvas 绘制
+      let canvas = document.getElementById('shareCanvas');
+      if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'shareCanvas';
+        canvas.style.display = 'none';
+        document.body.appendChild(canvas);
+      }
+      
+      canvas.width = 320;
+      canvas.height = 570;
+      
+      const ctx = canvas.getContext('2d');
+      const W = 320, H = 570;
+      const p = currentPersonality;
+      const color = p.color;
+      const baseUrl = window.location.href.split('?')[0] || 'https://q04vd2emidjh.space.minimaxi.com';
+      
+      // 背景
+      const grad = ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0,'#0A0E27');
+      grad.addColorStop(0.5,'#151933');
+      grad.addColorStop(1,'#0A0E27');
+      ctx.fillStyle=grad;
+      ctx.fillRect(0,0,W,H);
+      
+      // LOGO
+      ctx.fillStyle='rgba(255,255,255,0.4)';
+      ctx.font='12px Orbitron,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('DATI',W/2,35);
+      ctx.fillStyle='rgba(255,255,255,0.3)';
+      ctx.font='9px sans-serif';
+      ctx.fillText('数智人格测试',W/2,50);
+      
+      // 分隔线
+      ctx.strokeStyle=color;
+      ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(30,65);
+      ctx.lineTo(W-30,65);
+      ctx.stroke();
+      
+      // 人格名称
+      ctx.fillStyle=color;
+      ctx.font='bold 32px Orbitron,sans-serif';
+      ctx.shadowColor=color;
+      ctx.shadowBlur=12;
+      ctx.fillText(p.name,W/2,110);
+      ctx.shadowBlur=0;
+      
+      // 稀有度
+      if(p.rarity){
+        ctx.fillStyle='#FFD700';
+        ctx.font='11px sans-serif';
+        ctx.fillText(p.rarity,W/2,132);
+      }
+      
+      // 简介
+      ctx.fillStyle='#fff';
+      ctx.font='13px sans-serif';
+      ctx.fillText(p.summary,W/2,165);
+      
+      // 口头禅背景
+      ctx.fillStyle=color+'18';
+      roundRect(ctx,25,185,270,55,8);
+      ctx.fill();
+      ctx.strokeStyle=color+'44';
+      ctx.stroke();
+      ctx.fillStyle=color;
+      ctx.font='bold 13px sans-serif';
+      ctx.fillText('"'+p.slogan+'"',W/2,217);
+      
+      // 特质
+      ctx.fillStyle='rgba(255,255,255,0.4)';
+      ctx.font='9px sans-serif';
+      ctx.textAlign='left';
+      ctx.fillText('🔮 核心特质',35,260);
+      ctx.textAlign='center';
+      p.traits.forEach((t,i)=>{
+        ctx.fillStyle=color;
+        ctx.font='11px sans-serif';
+        ctx.fillText('▸ '+t,W/2,285+i*22);
+      });
+      
+      // 雷达图
+      const rx=W/2,ry=415,rr=45;
+      for(let i=1;i<=4;i++){
+        ctx.beginPath();
+        ctx.arc(rx,ry,rr*i/4,0,Math.PI*2);
+        ctx.strokeStyle='rgba(0,255,255,0.12)';
+        ctx.lineWidth=0.5;
+        ctx.stroke();
+      }
+      ['AI心态','AI融合','数据主权'].forEach((l,i)=>{
+        const angle=(i*120-90)*Math.PI/180;
+        ctx.beginPath();
+        ctx.moveTo(rx,ry);
+        ctx.lineTo(rx+Math.cos(angle)*rr,ry+Math.sin(angle)*rr);
+        ctx.strokeStyle='rgba(0,255,255,0.2)';
+        ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,0.5)';
+        ctx.font='8px sans-serif';
+        ctx.fillText(l,rx+Math.cos(angle)*(rr+12),ry+Math.sin(angle)*(rr+12));
+      });
+      ctx.beginPath();
+      [scores.anxiety,scores.fusion,scores.data].forEach((v,i)=>{
+        const angle=(i*120-90)*Math.PI/180;
+        const val=(v+20)/40;
+        const x=rx+Math.cos(angle)*rr*Math.max(0,Math.min(1,val));
+        const y=ry+Math.sin(angle)*rr*Math.max(0,Math.min(1,val));
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.closePath();
+      ctx.fillStyle=color+'18';
+      ctx.fill();
+      ctx.strokeStyle=color;
+      ctx.lineWidth=1;
+      ctx.stroke();
+      
+      // 二维码 - 使用更高容错率生成更清晰的二维码
+      try {
+        const qr = qrcode(0, 'L'); // 使用L级别（小一些但更清晰）
+        qr.addData(baseUrl);
+        qr.make();
+        const qrSize = 65;
+        const qrX = (W - qrSize) / 2;
+        const qrY = 490;
+        const modules = qr.getModuleCount();
+        const cellSize = qrSize / modules;
+        
+        // 二维码背景
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(qrX - 4, qrY - 4, qrSize + 8, qrSize + 8);
+        
+        ctx.strokeStyle = color + '66';
+        ctx.lineWidth = 1;
+        roundRect(ctx, qrX - 4, qrY - 4, qrSize + 8, qrSize + 8, 3);
+        ctx.stroke();
+        
+        for (let row = 0; row < modules; row++) {
+          for (let col = 0; col < modules; col++) {
+            if (qr.isDark(row, col)) {
+              ctx.fillStyle = '#000000';
+              ctx.fillRect(qrX + col * cellSize, qrY + row * cellSize, cellSize + 0.5, cellSize + 0.5);
+            }
+          }
+        }
+        
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '7px sans-serif';
+        ctx.fillText('长按识别测试', W/2, 558);
+      } catch(e) {}
+      
+      // 底部
+      ctx.fillStyle='rgba(255,255,255,0.15)';
+      ctx.font='7px sans-serif';
+      ctx.fillText('© 2026 DATI',W/2,570);
+      
+      // 把canvas转成图片显示
+      const img = document.getElementById('shareImg');
+      if (img) {
+        img.src = canvas.toDataURL('image/png');
+      }
+    }
+
+    function roundRect(ctx,x,y,w,h,r){
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);
+      ctx.lineTo(x+w-r,y);
+      ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+      ctx.lineTo(x+w,y+h-r);
+      ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+      ctx.lineTo(x+r,y+h);
+      ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+      ctx.lineTo(x,y+r);
+      ctx.quadraticCurveTo(x,y,x+r,y);
+      ctx.closePath();
+    }
+  </script>
+</body>
+</html>
